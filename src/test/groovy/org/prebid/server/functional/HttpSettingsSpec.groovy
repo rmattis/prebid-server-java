@@ -1,5 +1,6 @@
 package org.prebid.server.functional
 
+import org.prebid.server.functional.model.bidder.BidderName
 import org.prebid.server.functional.model.db.StoredRequest
 import org.prebid.server.functional.model.mock.services.httpsettings.HttpAccountsResponse
 import org.prebid.server.functional.model.request.amp.AmpRequest
@@ -43,7 +44,7 @@ class HttpSettingsSpec extends BaseSpec {
         then: "Response should contain basic fields"
         assert response.id
         assert response.seatbid?.size() == 1
-        assert response.seatbid.first().seat == "generic"
+        assert response.seatbid.first().seat == BidderName.GENERIC
         assert response.seatbid?.first()?.bid?.size() == 1
 
         and: "There should be only one call to bidder"
