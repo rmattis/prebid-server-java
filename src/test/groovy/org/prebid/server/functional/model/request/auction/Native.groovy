@@ -7,14 +7,14 @@ import groovy.transform.ToString
 @ToString(includeNames = true, ignoreNulls = true)
 class Native {
 
-    @JsonSerialize(using = Request.NativeSerializer)
-    @JsonDeserialize(using = Request.NativeDeserializer)
-    Request request
+    @JsonSerialize(using = NativeRequest.NativeSerializer)
+    @JsonDeserialize(using = NativeRequest.NativeDeserializer)
+    NativeRequest request
     String ver
     List<Integer> api
     List<Integer> battr
 
     static Native getDefaultNative(){
-        new Native(request: Request.request)
+        new Native(request: NativeRequest.request)
     }
 }

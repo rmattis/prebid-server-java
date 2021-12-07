@@ -2,7 +2,6 @@ package org.prebid.server.functional.model.request.auction
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
@@ -11,7 +10,7 @@ import groovy.transform.ToString
 import org.prebid.server.functional.testcontainers.Dependencies
 
 @ToString(includeNames = true, ignoreNulls = true)
-class Request {
+class NativeRequest {
 
     String ver
     Integer context
@@ -25,8 +24,8 @@ class Request {
     List<EventTracker> eventtrackers
     Integer privacy
 
-    static Request getRequest() {
-        new Request().tap {
+    static NativeRequest getRequest() {
+        new NativeRequest().tap {
             context = 1
             plcmttype = 1
             it.addAsset(Asset.assetTitle)
@@ -42,30 +41,28 @@ class Request {
         assets.add(asset)
     }
 
-    static class NativeSerializer extends StdSerializer<Request> {
+    static class NativeSerializer extends StdSerializer<NativeRequest> {
 
         NativeSerializer() {
-            super(Request)
+            super(NativeRequest)
         }
 
         @Override
-        void serialize(Request request, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
-                throws IOException {
+        void serialize(NativeRequest request, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) {
             def string = Dependencies.objectMapperWrapper.encode(request)
             jsonGenerator.writeString(string)
         }
     }
 
-    static class NativeDeserializer extends StdDeserializer<Request> {
+    static class NativeDeserializer extends StdDeserializer<NativeRequest> {
 
         protected NativeDeserializer() {
-            super(Request)
+            super(NativeRequest)
         }
 
         @Override
-        Request deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
-                throws IOException, JsonProcessingException {
-            jsonParser.text ? Dependencies.objectMapperWrapper.decode(jsonParser.text, Request) : null
+        NativeRequest deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) {
+            jsonParser.text ? Dependencies.objectMapperWrapper.decode(jsonParser.text, NativeRequest) : null
         }
     }
 }
