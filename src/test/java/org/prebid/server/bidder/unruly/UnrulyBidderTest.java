@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.function.Function.identity;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -186,7 +187,7 @@ public class UnrulyBidderTest extends VertxTest {
     }
 
     @Test
-    public void makeBidsShouldReturnErrorIfImpressionWasNotFound() throws JsonProcessingException {
+    public void makeBidsShouldReturnErrorUnknownImpressionType() throws JsonProcessingException {
         // given
         final HttpCall<BidRequest> httpCall = givenHttpCall(
                 BidRequest.builder()
@@ -200,8 +201,27 @@ public class UnrulyBidderTest extends VertxTest {
 
         // then
         assertThat(result.getValue()).isEmpty();
-        assertThat(result.getErrors()).hasSize(1)
-                .containsExactly(BidderError.badServerResponse("Failed to find impression 123"));
+        assertThat(result.getErrors())
+                .containsExactly(BidderError.badServerResponse("Unknown impression type for ID: 123"));
+    }
+
+    @Test
+    public void makeBidsShouldReturnErrorIfImpressionWasNotFound() throws JsonProcessingException {
+        // given
+        final HttpCall<BidRequest> httpCall = givenHttpCall(
+                BidRequest.builder()
+                        .imp(emptyList())
+                        .build(),
+                mapper.writeValueAsString(
+                        givenBidResponse(bidBuilder -> bidBuilder.impid("333"))));
+
+        // when
+        final Result<List<BidderBid>> result = unrulyBidder.makeBids(httpCall, null);
+
+        // then
+        assertThat(result.getValue()).isEmpty();
+        assertThat(result.getErrors())
+                .containsExactly(BidderError.badServerResponse("Failed to find impression 333"));
     }
 
     private static BidRequest givenBidRequest(
